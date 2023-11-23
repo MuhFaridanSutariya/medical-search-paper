@@ -1,0 +1,7 @@
+streamlit
+google-search-results
+arxiv
+streamlit-chat
+langchain
+openai
+pypdf
