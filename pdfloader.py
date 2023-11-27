@@ -2,6 +2,8 @@
 import os
 
 from langchain.document_loaders import OnlinePDFLoader
+from langchain.document_loaders import PyPDFium2Loader
+
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores.faiss import FAISS
@@ -12,7 +14,7 @@ def loadPDF(url):
     # TODO: Temporarily load a PDF from some archive, 
     # need to change this to the pdf that is retrieved from pubmed API
     # loader = OnlinePDFLoader("https://arxiv.org/pdf/2302.03803.pdf")
-    loader = OnlinePDFLoader(url)
+    loader = PyPDFium2Loader(url)
     pdf_data = loader.load()
 
     # Split up the document to avoid token threshold
@@ -32,4 +34,6 @@ def queryPDF(query, docsearch):
     chain = load_qa_chain(OpenAI(), chain_type="stuff")
     # pass some query to the API to interact with the PDF
     docs = docsearch.similarity_search(query)
-    chain.run(input_documents=docs, question=query)
+    response = chain.run(input_documents=docs, question=query)
+
+    return response

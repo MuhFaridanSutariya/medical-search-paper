@@ -5,3 +5,11 @@ streamlit-chat
 langchain
 openai
 pypdf
+unstructured
+pdf2image
+pdfminer
+tiktoken
+faiss-cpu
+pypdfium2
+pypdf2
+pdfminer.six

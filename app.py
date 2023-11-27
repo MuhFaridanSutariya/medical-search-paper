@@ -1,6 +1,7 @@
 import os
 import random
 import string
+import tempfile
 
 # from apikey import openapikey, serpapikey
 from langchain.llms import OpenAI
@@ -41,30 +42,50 @@ def initialize():
 
 def main():
     agent = initialize()
-    # Display the page title and the text box for the user to ask the question
     st.title('🦜 Search and query academic medical papers ')
-    prompt = st.text_input(" What medical topic would you like to know about? ")      
+    
+    # Dropdown to select between features
+    selected_feature = st.selectbox("Select Feature", ["Question Answering", "PDF Query"])
 
-    if prompt:
-        # save the chat history 
-        if 'answer' not in st.session_state:
-            st.session_state['answer'] = []
+    if selected_feature == "Question Answering":
+        prompt = st.text_input("What medical topic would you like to know about? ")      
 
-        if 'question' not in st.session_state:
-            st.session_state['question'] = [] 
+        if prompt:
+            if 'answer' not in st.session_state:
+                st.session_state['answer'] = []
+            if 'question' not in st.session_state:
+                st.session_state['question'] = [] 
 
-        response = agent.run(prompt)
+            response = agent.run(prompt)
 
-        st.session_state.question.insert(0,prompt )
-        st.session_state.answer.insert(0,response )   
+            st.session_state.question.insert(0, prompt)
+            st.session_state.answer.insert(0, response)   
 
-        # Display the chat history
-        for i in range(len( st.session_state.question)):        
-            questionKey = ''.join(random.choice(string.ascii_letters) for i in range(10))
-            answerKey = ''.join(random.choice(string.ascii_letters) for i in range(10))
-            
-            message(st.session_state['question'][i], is_user=True, key= questionKey)
-            message(st.session_state['answer'][i], is_user=False, key= answerKey)
+            # Display the chat history
+            for i in range(len(st.session_state.question)):        
+                questionKey = ''.join(random.choice(string.ascii_letters) for i in range(10))
+                answerKey = ''.join(random.choice(string.ascii_letters) for i in range(10))
+                
+                message(st.session_state['question'][i], is_user=True, key=questionKey)
+                message(st.session_state['answer'][i], is_user=False, key=answerKey)
+    else:
+        uploaded_file = st.file_uploader("Upload a PDF", type="pdf")
+
+        if uploaded_file:
+            temp_file = tempfile.NamedTemporaryFile(delete=False)
+            temp_file.write(uploaded_file.read())
+            pdf_path = temp_file.name
+
+            docsearch = loadPDF(pdf_path)
+
+            query = st.text_input("What medical topic would you like to know about from the PDF?")
+
+            if query:
+                pdf_response = queryPDF(query, docsearch)
+                st.write("Response from the PDF:", pdf_response)
+
+            temp_file.close()
+            os.unlink(temp_file.name)
 
 if __name__ == '__main__':
     main()
