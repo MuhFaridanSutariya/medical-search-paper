@@ -5,4 +5,4 @@
 3. create virtual environtment `python -m venv venv && source venv/bin/activate` (Mac/Linux)
 4. install dependecy library with this command `pip install -r requirements.txt`
 5. fill `openaiapikey` and `serpapikey` at app.py
-6. run to open this streamlit app with this command `streamlit run app.py`
+6. open this streamlit app with this command `streamlit run app.py`
